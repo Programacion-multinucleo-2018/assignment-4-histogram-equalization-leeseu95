@@ -96,15 +96,19 @@ __global__ void createHistogram_kernel(unsigned char* input, unsigned char* outp
 __global__ void normalizeHistogram(unsigned char* input, unsigned char* output, float grayImageSize, int *h_s) {
 	int xyIndex = threadIdx.x + threadIdx.y * blockDim.x;
 
+	//Creamos variable temporal para guardar el histograma original
 	__shared__ int temporal[256];
 
 	if(xyIndex < 256 && blockIdx.x == 0 && blockIdx.y == 0) { //Validacion
+		//Inicializamos con 0
 		temporal[xyIndex] = 0;
+		//Guardamos histograma original
 		temporal[xyIndex] = h_s[xyIndex];
 		__syncthreads();
 
 		unsigned int normVar = 0;
 		for(int i = 0; i <= xyIndex; i++) {
+			//Normalizar
 			normVar += temporal[i];
 		}
 		h_s[xyIndex] = normVar/255;
