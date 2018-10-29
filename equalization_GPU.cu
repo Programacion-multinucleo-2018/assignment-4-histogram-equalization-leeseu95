@@ -111,11 +111,11 @@ __global__ void normalizeHistogram(unsigned char* input, unsigned char* output, 
 			//Normalizar
 			normVar += temporal[i];
 		}
-		h_s[xyIndex] = normVar/255;
+		// h_s[xyIndex] = normVar/255;
 		// for(int i = 0; i <= xyIndex; i++) {
 		// 	h_s[xyIndex] += temp[i];
 		// }	
-		// h_s[xyIndex] = h_s[xyIndex]*255/grayImageSize;
+		h_s[xyIndex] = normVar*255/grayImageSize;
 	}
 }
 //Codigo de la tarea 2
@@ -146,8 +146,8 @@ void equalizer(const cv::Mat& input, cv::Mat& output)
 	SAFE_CALL(cudaMemcpy(d_input, input.ptr(), grayBytes, cudaMemcpyHostToDevice), "CUDA Memcpy Host To Device Failed");
 	SAFE_CALL(cudaMemcpy(d_output, output.ptr(), grayBytes, cudaMemcpyHostToDevice), "CUDA Memcpy Host To Device Failed");
 
-	int xBlock = 32;
-	int yBlock = 32;
+	int xBlock = 16;
+	int yBlock = 16;
 	// Specify a reasonable block size
 	const dim3 block(xBlock, yBlock);
 
@@ -210,6 +210,9 @@ int main(int argc, char *argv[])
 	//Allow the windows to resize
 	namedWindow("Input", cv::WINDOW_NORMAL);
 	namedWindow("Output", cv::WINDOW_NORMAL);
+
+	cv::resizeWindow("Input", 800, 600);
+	cv::resizeWindow("Output", 800, 600);
 
 	//Show the input and output
 	imshow("Input", temp);
